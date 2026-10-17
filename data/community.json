@@ -1,23 +1,142 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-17T14:53:14.686Z",
-  "count": 1,
+  "updatedAt": "2026-10-17T15:01:38.773Z",
+  "count": 8,
   "sources": [
     {
-      "name": "星海音乐源",
-      "url": "https://zrcdy.dpdns.org/lx/vers.php",
-      "repo": "",
-      "type": "page",
-      "notes": "",
+      "name": "其他音源仓库",
+      "url": "https://github.com/pdone/lx-music-source",
+      "repo": "pdone/lx-music-source",
+      "type": "repo",
+      "notes": "GitHub上的一些公开洛雪音源仓库",
       "submitter": "zlyon",
-      "issue": 1,
-      "approvedAt": "2026-10-17T14:26:24Z",
+      "issue": 2,
+      "approvedAt": "2026-10-17T15:01:14Z",
       "stats": {
-        "jsTotal": 35,
-        "source": 17,
-        "usable": 6,
-        "suspect": 5,
-        "at": "2026-10-17T14:14:57.249Z"
+        "jsTotal": 77,
+        "source": 62,
+        "usable": 4,
+        "suspect": 2,
+        "at": "2026-10-17T14:59:16.353Z"
+      }
+    },
+    {
+      "name": "其他音源仓库",
+      "url": "https://github.com/Huibq/keep-alive",
+      "repo": "Huibq/keep-alive",
+      "type": "repo",
+      "notes": "GitHub上的一些公开洛雪音源仓库",
+      "submitter": "zlyon",
+      "issue": 2,
+      "approvedAt": "2026-10-17T15:01:14Z",
+      "stats": {
+        "jsTotal": 77,
+        "source": 62,
+        "usable": 4,
+        "suspect": 2,
+        "at": "2026-10-17T14:59:16.353Z"
+      }
+    },
+    {
+      "name": "其他音源仓库",
+      "url": "https://github.com/xzh767/lxmusic-source-all",
+      "repo": "xzh767/lxmusic-source-all",
+      "type": "repo",
+      "notes": "GitHub上的一些公开洛雪音源仓库",
+      "submitter": "zlyon",
+      "issue": 2,
+      "approvedAt": "2026-10-17T15:01:14Z",
+      "stats": {
+        "jsTotal": 77,
+        "source": 62,
+        "usable": 4,
+        "suspect": 2,
+        "at": "2026-10-17T14:59:16.353Z"
+      }
+    },
+    {
+      "name": "其他音源仓库",
+      "url": "https://github.com/liuyunss/LX-source",
+      "repo": "liuyunss/LX-source",
+      "type": "repo",
+      "notes": "GitHub上的一些公开洛雪音源仓库",
+      "submitter": "zlyon",
+      "issue": 2,
+      "approvedAt": "2026-10-17T15:01:14Z",
+      "stats": {
+        "jsTotal": 77,
+        "source": 62,
+        "usable": 4,
+        "suspect": 2,
+        "at": "2026-10-17T14:59:16.353Z"
+      }
+    },
+    {
+      "name": "其他音源仓库",
+      "url": "https://github.com/skxingyu/lx_music-",
+      "repo": "skxingyu/lx_music-",
+      "type": "repo",
+      "notes": "GitHub上的一些公开洛雪音源仓库",
+      "submitter": "zlyon",
+      "issue": 2,
+      "approvedAt": "2026-10-17T15:01:14Z",
+      "stats": {
+        "jsTotal": 77,
+        "source": 62,
+        "usable": 4,
+        "suspect": 2,
+        "at": "2026-10-17T14:59:16.353Z"
+      }
+    },
+    {
+      "name": "其他音源仓库",
+      "url": "https://github.com/jeffernn/music-source",
+      "repo": "jeffernn/music-source",
+      "type": "repo",
+      "notes": "GitHub上的一些公开洛雪音源仓库",
+      "submitter": "zlyon",
+      "issue": 2,
+      "approvedAt": "2026-10-17T15:01:14Z",
+      "stats": {
+        "jsTotal": 77,
+        "source": 62,
+        "usable": 4,
+        "suspect": 2,
+        "at": "2026-10-17T14:59:16.353Z"
+      }
+    },
+    {
+      "name": "其他音源仓库",
+      "url": "https://github.com/Qian-Ning/LX-Music-Source",
+      "repo": "Qian-Ning/LX-Music-Source",
+      "type": "repo",
+      "notes": "GitHub上的一些公开洛雪音源仓库",
+      "submitter": "zlyon",
+      "issue": 2,
+      "approvedAt": "2026-10-17T15:01:14Z",
+      "stats": {
+        "jsTotal": 77,
+        "source": 62,
+        "usable": 4,
+        "suspect": 2,
+        "at": "2026-10-17T14:59:16.353Z"
+      }
+    },
+    {
+      "name": "其他音源仓库",
+      "url": "https://github.com/oozzbb/LxMusicApi",
+      "repo": "oozzbb/LxMusicApi",
+      "type": "repo",
+      "notes": "GitHub上的一些公开洛雪音源仓库",
+      "submitter": "zlyon",
+      "issue": 2,
+      "approvedAt": "2026-10-17T15:01:14Z",
+      "stats": {
+        "jsTotal": 77,
+        "source": 62,
+        "usable": 4,
+        "suspect": 2,
+        "at": "2026-10-17T14:59:16.353Z"
       }
     }
   ]
