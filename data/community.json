@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-17T15:08:52.254Z",
+  "updatedAt": "2026-10-17T15:34:55.030Z",
   "count": 8,
   "sources": [
     {
-      "name": "其他音源仓库",
+      "name": "pdone/lx-music-source",
       "url": "https://github.com/pdone/lx-music-source",
       "repo": "pdone/lx-music-source",
       "type": "repo",
@@ -20,7 +20,7 @@
       }
     },
     {
-      "name": "其他音源仓库",
+      "name": "Huibq/keep-alive",
       "url": "https://github.com/Huibq/keep-alive",
       "repo": "Huibq/keep-alive",
       "type": "repo",
@@ -36,7 +36,7 @@
       }
     },
     {
-      "name": "其他音源仓库",
+      "name": "xzh767/lxmusic-source-all",
       "url": "https://github.com/xzh767/lxmusic-source-all",
       "repo": "xzh767/lxmusic-source-all",
       "type": "repo",
@@ -52,7 +52,7 @@
       }
     },
     {
-      "name": "其他音源仓库",
+      "name": "liuyunss/LX-source",
       "url": "https://github.com/liuyunss/LX-source",
       "repo": "liuyunss/LX-source",
       "type": "repo",
@@ -68,7 +68,7 @@
       }
     },
     {
-      "name": "其他音源仓库",
+      "name": "skxingyu/lx_music-",
       "url": "https://github.com/skxingyu/lx_music-",
       "repo": "skxingyu/lx_music-",
       "type": "repo",
@@ -84,7 +84,7 @@
       }
     },
     {
-      "name": "其他音源仓库",
+      "name": "jeffernn/music-source",
       "url": "https://github.com/jeffernn/music-source",
       "repo": "jeffernn/music-source",
       "type": "repo",
@@ -100,7 +100,7 @@
       }
     },
     {
-      "name": "其他音源仓库",
+      "name": "Qian-Ning/LX-Music-Source",
       "url": "https://github.com/Qian-Ning/LX-Music-Source",
       "repo": "Qian-Ning/LX-Music-Source",
       "type": "repo",
@@ -116,7 +116,7 @@
       }
     },
     {
-      "name": "其他音源仓库",
+      "name": "oozzbb/LxMusicApi",
       "url": "https://github.com/oozzbb/LxMusicApi",
       "repo": "oozzbb/LxMusicApi",
       "type": "repo",
