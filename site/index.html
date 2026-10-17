@@ -21,11 +21,25 @@
 </header>
 
 <main class="wrap">
+  <div class="ov" id="ov">
+    <div class="card"><i id="ovCount">—</i><b>收录条目</b></div>
+    <div class="card"><i id="ovSource">—</i><b>音源脚本</b></div>
+    <div class="card ok"><i id="ovUsable">—</i><b>实测可用</b></div>
+    <div class="card"><i id="ovPending">—</i><b>待实测</b></div>
+  </div>
+
   <div class="bar">
     <input type="text" id="q" placeholder="搜索名称 / 仓库 / 提交者…">
+    <label class="only"><input type="checkbox" id="onlyOk"> 只看有可用</label>
+  </div>
+  <div class="chips" id="chips">
+    <button class="chip on" data-t="all">全部</button>
+    <button class="chip" data-t="repo">仓库</button>
+    <button class="chip" data-t="js">直链</button>
+    <button class="chip" data-t="page">发布页</button>
     <span class="meta" id="meta">加载中…</span>
   </div>
-  <div class="tip">每个链接都经过 <b>自动恶意特征扫描 + 沙箱试听实测 + 人工审核</b> 三重把关；「可用 N/M」为审核时的实测快照（云端网络环境，仅供参考），音源后续更新由插件端每次爬取重新扫描实测。发现问题的收录可到 GitHub 仓库提 issue 举报。</div>
+  <div class="tip">每个链接都经过 <b>自动恶意特征扫描 + 沙箱试听实测 + 人工审核</b> 三重把关；「实测可用」为审核时快照（云端网络环境，仅供参考），音源后续更新由插件端每次爬取重新扫描实测。发现问题的收录可到 GitHub 仓库提 issue 举报。</div>
   <div id="list" class="list"><div class="empty">加载中…</div></div>
 </main>
 
