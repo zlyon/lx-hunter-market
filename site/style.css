@@ -21,24 +21,47 @@ a { color: var(--accent); text-decoration: none; }
 .top nav a { font-size: 13px; }
 .top nav a.gh { border: 1px solid var(--border); border-radius: 999px; padding: 3px 14px; }
 
-.bar { display: flex; align-items: center; gap: 12px; margin: 18px 0 10px; flex-wrap: wrap; }
+/* 总览统计卡 */
+.ov { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 18px 0 4px; }
+.ov .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: flex; flex-direction: column; }
+.ov .card i { font-style: normal; font-size: 22px; font-weight: 700; line-height: 1.2; }
+.ov .card.ok i { color: var(--green); }
+.ov .card b { color: var(--muted); font-size: 11px; font-weight: 500; }
+@media (max-width: 560px) { .ov { grid-template-columns: repeat(2, 1fr); } }
+
+.bar { display: flex; align-items: center; gap: 12px; margin: 14px 0 8px; flex-wrap: wrap; }
 .bar input { flex: 1; min-width: 220px; background: var(--panel); border: 1px solid var(--border); color: var(--text); border-radius: 999px; padding: 9px 18px; font-size: 14px; }
 .bar input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-.bar .meta { color: var(--muted); font-size: 12px; }
+.bar .only { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; cursor: pointer; user-select: none; }
+
+.chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.chips .chip { background: var(--panel); border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 3px 14px; font-size: 12px; cursor: pointer; }
+.chips .chip.on { color: var(--accent); border-color: var(--accent); font-weight: 600; }
+.chips .meta { color: var(--muted); font-size: 12px; margin-left: auto; }
+
 .tip { color: var(--muted); font-size: 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; margin-bottom: 14px; }
 
 .list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 24px; }
 .item { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 13px 18px; }
-.item .row1 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.item .head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .item .name { font-weight: 600; font-size: 15px; }
-.item .type { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 9px; }
-.item .type.ub { color: var(--green); border-color: var(--green); }
+.item .chip { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 9px; }
 .item .by { color: var(--muted); font-size: 12px; margin-left: auto; }
-.item .row2 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+
+/* 实测比例条 */
+.meter { height: 5px; background: var(--border); border-radius: 999px; margin-top: 9px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--green); border-radius: 999px; }
+.meter.zero i { background: var(--red); }
+.statline { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 6px; font-size: 12px; }
+.statline .ok { color: var(--green); font-weight: 600; }
+.statline .zero { color: var(--red); font-weight: 600; }
+.statline .dim { color: var(--muted); }
+
+.item .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 7px; }
 .item .url { color: var(--muted); font-size: 12px; font-family: Consolas, monospace; word-break: break-all; flex: 1; min-width: 200px; }
 .item button { background: transparent; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 3px 14px; font-size: 12px; cursor: pointer; }
 .item button:hover { background: var(--accent); color: var(--bg); }
-.item .notes { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.item .notes { color: var(--muted); font-size: 12px; margin-top: 5px; }
 .empty { text-align: center; color: var(--muted); padding: 48px 0; }
 
 .foot { color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); padding-top: 14px; padding-bottom: 28px; }
