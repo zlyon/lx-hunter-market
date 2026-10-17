@@ -123,9 +123,9 @@ listApproved(1, []).then(function (issues) {
       })
     }
     copyDir('site', 'dist')
-    // 资源缓存击穿：把 dist/index.html 里的 ?v=BUILD 替换为构建时间戳
-    var ver = 'v=' + Date.now()
-    var idxHtml = readFileSync('dist/index.html', 'utf8').replace(/\?v=BUILD/g, ver)
+    // 资源缓存击穿：把 dist/index.html 里的 BUILD 占位替换为构建时间戳（保留 ?v= 前缀）
+    var idxHtml = readFileSync('dist/index.html', 'utf8').replace(/BUILD/g, String(Date.now()))
+    if (!/\?v=\d{13}/.test(idxHtml)) throw new Error('资源缓存参数替换失败，index.html 引用异常')
     writeFileSync('dist/index.html', idxHtml)
     writeFileSync('dist/community.json', JSON.stringify(out))
     console.log('构建完成：' + sources.length + ' 个收录（来自 ' + issues.length + ' 个 approved issue）')
