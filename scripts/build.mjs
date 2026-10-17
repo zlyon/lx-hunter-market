@@ -1,6 +1,6 @@
 // 构建社区精选：收集带 approved 标签的开放 issue → data/community.json + dist/（Pages 站点）。
 // 由 build.yml 触发（定时/手动/push），需 env：GH_TOKEN、GITHUB_REPOSITORY。
-import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync, existsSync } from 'node:fs'
 import { parseForm, classifyLink, gh } from './form.mjs'
 
 var token = process.env.GH_TOKEN
@@ -85,14 +85,36 @@ listApproved(1, []).then(function (issues) {
     })
   })
   return next.then(function () {
+    // 重名消解：一条投稿带多个链接时标题相同（如「其他音源仓库」×8），改用 URL 派生标识
+    function refLabel(s) {
+      if (s.repo) return s.repo
+      try {
+        var u = new URL(s.url)
+        var segs = u.pathname.split('/').filter(Boolean)
+        var last = segs[segs.length - 1] || ''
+        if (/\.js$/i.test(last)) return last.replace(/\.js$/i, '')
+        return u.host + (u.pathname !== '/' ? u.pathname.slice(0, 30) : '')
+      } catch (e) { return s.url.slice(0, 40) }
+    }
+    var nameCount = {}
+    sources.forEach(function (s) { nameCount[s.name] = (nameCount[s.name] || 0) + 1 })
+    sources.forEach(function (s) { if (nameCount[s.name] > 1) s.name = refLabel(s) })
     sources.sort(function (a, b) { return a.approvedAt < b.approvedAt ? -1 : 1 })
     var out = { schema: 1, updatedAt: new Date().toISOString(), count: sources.length, sources: sources }
     mkdirSync('data', { recursive: true })
     writeFileSync(DATA_FILE, JSON.stringify(out, null, 2) + '\n')
 
     // Pages 站点产物：site/* + community.json 放同级，前端相对路径取
-    mkdirSync('dist', { recursive: true })
-    cpSync('site', 'dist', { recursive: true })
+    // 注意：本机 Node 22.22.2 的 cpSync 在含中文的路径下会静默硬崩（exit 127），改用手动递归复制
+    function copyDir(src, dest) {
+      mkdirSync(dest, { recursive: true })
+      readdirSync(src, { withFileTypes: true }).forEach(function (ent) {
+        var s = src + '/' + ent.name, d = dest + '/' + ent.name
+        if (ent.isDirectory()) copyDir(s, d)
+        else copyFileSync(s, d)
+      })
+    }
+    copyDir('site', 'dist')
     writeFileSync('dist/community.json', JSON.stringify(out))
     console.log('构建完成：' + sources.length + ' 个收录（来自 ' + issues.length + ' 个 approved issue）')
   })
