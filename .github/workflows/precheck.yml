@@ -1,0 +1,28 @@
+name: 投稿预检
+on:
+  issues:
+    types: [opened, edited]
+permissions:
+  issues: write
+  contents: read
+concurrency:
+  group: precheck-${{ github.event.issue.number }}
+  cancel-in-progress: true
+jobs:
+  precheck:
+    if: >-
+      contains(github.event.issue.labels.*.name, 'pending') &&
+      !contains(github.event.issue.labels.*.name, 'approved') &&
+      !contains(github.event.issue.labels.*.name, 'rejected')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - env:
+          GH_TOKEN: ${{ secrets.MARKET_TOKEN || secrets.GITHUB_TOKEN }}
+          COMMENT_TOKEN: ${{ secrets.MARKET_TOKEN || secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node scripts/precheck.mjs

@@ -1,0 +1,35 @@
+name: 音源收录投稿
+description: 提交音源仓库、音源脚本链接或音源发布页，自动预检 + 人工审核后收录进「社区精选」
+title: "[音源收录] "
+labels: ["pending"]
+body:
+  - type: textarea
+    id: links
+    attributes:
+      label: 链接地址
+      description: >
+        音源名称直接写在页面顶部的标题里（保留 [音源收录] 前缀，后面接名称即可），避免重复填写。
+        每行一个链接，支持：.js 直链、GitHub 仓库地址、音源发布页（挂着多个 .js 的列表页）；
+        也可以把 .js 文件直接拖入下方输入框作为附件上传。请不要附加其他文字到链接行内
+      placeholder: |
+        https://example.com/my-source.js
+        https://github.com/username/lx-sources
+        https://example.com/sources.html
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 说明（可选）
+      description: 支持的平台、脚本来源、更新方式等
+      placeholder: 例如：支持 网易/QQ/酷我，更新随上游仓库
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 提交确认
+      options:
+        - label: 我有权分享该音源，链接可公开访问
+        - label: 该音源不含恶意代码（窃取 Cookie / 设备信息 / 剪贴板等）
+        - label: 我了解收录后任何人都可通过插件订阅到该链接
+    validations:
+      required: true

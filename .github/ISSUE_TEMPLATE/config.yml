@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 插件使用问题 / Bug 反馈
+    url: https://github.com/zlyon/lx-hunter/issues
+    about: 音源猎手插件本身的问题请到主仓库反馈，本仓库只处理音源收录

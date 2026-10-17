@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>音源猎手 · 社区精选</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">🎧 <b>音源猎手 · 社区精选</b>
+      <span class="sub">经人工审核收录的音源仓库 / 脚本链接</span>
+    </div>
+    <nav>
+      <a href="https://github.com/zlyon/lx-hunter" target="_blank" rel="noopener">插件主页</a>
+      <a href="https://github.com/zlyon/lx-hunter-market/issues/new?template=source-submit.yml" target="_blank" rel="noopener">＋ 投稿收录</a>
+      <a class="gh" href="https://github.com/zlyon/lx-hunter-market" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="bar">
+    <input type="text" id="q" placeholder="搜索名称 / 仓库 / 提交者…">
+    <span class="meta" id="meta">加载中…</span>
+  </div>
+  <div class="tip">每个链接都经过 <b>自动恶意特征扫描 + 沙箱试听实测 + 人工审核</b> 三重把关；「可用 N/M」为审核时的实测快照（云端网络环境，仅供参考），音源后续更新由插件端每次爬取重新扫描实测。发现问题的收录可到 GitHub 仓库提 issue 举报。</div>
+  <div id="list" class="list"><div class="empty">加载中…</div></div>
+</main>
+
+<footer class="foot wrap">
+  数据每次构建自动更新 · <span id="updatedAt">—</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
