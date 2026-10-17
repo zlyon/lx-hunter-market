@@ -106,7 +106,9 @@ listApproved(1, []).then(function (issues) {
     sources.forEach(function (s) { nameCount[s.name] = (nameCount[s.name] || 0) + 1 })
     sources.forEach(function (s) { if (nameCount[s.name] > 1) s.name = refLabel(s) })
     sources.sort(function (a, b) { return a.approvedAt < b.approvedAt ? -1 : 1 })
-    var out = { schema: 1, updatedAt: new Date().toISOString(), count: sources.length, sources: sources }
+    // 收录内容无实质变化时沿用旧 updatedAt：避免每次构建都产生空提交、也消除并发构建的提交竞争
+    var stamp = JSON.stringify(old.sources || []) === JSON.stringify(sources) && old.updatedAt ? old.updatedAt : new Date().toISOString()
+    var out = { schema: 1, updatedAt: stamp, count: sources.length, sources: sources }
     mkdirSync('data', { recursive: true })
     writeFileSync(DATA_FILE, JSON.stringify(out, null, 2) + '\n')
 
