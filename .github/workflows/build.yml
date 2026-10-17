@@ -40,7 +40,7 @@ jobs:
             echo "数据无变化，跳过提交"
           else
             git commit -m "chore(data): 更新社区精选 [skip ci]"
-            git push
+            git pull --rebase origin main && git push || (git rebase --abort 2>/dev/null; git pull --rebase origin main && git push)
           fi
       - uses: actions/upload-pages-artifact@v3
         with:
