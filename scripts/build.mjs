@@ -67,6 +67,12 @@ listApproved(1, []).then(function (issues) {
           if (!link) return
           var key = link.url
           if (seen[key]) return
+          // 预检没测出音源脚本的链接（仓库里没有 .js / 扫描失败）直接抛弃，不入库不展示
+          var matched = statsFor(link.url, stats)
+          if (matched && (matched.source == null || (matched.source === 0 && matched.jsTotal === 0))) {
+            console.log('跳过（无音源脚本）: ' + key)
+            return
+          }
           seen[key] = true
           var prev = prevByKey[key]
           sources.push({
@@ -78,7 +84,7 @@ listApproved(1, []).then(function (issues) {
             submitter: issue.user ? issue.user.login : '',
             issue: issue.number,
             approvedAt: (prev && prev.approvedAt) || issue.updated_at || new Date().toISOString(),
-            stats: statsFor(link.url, stats) || (prev && prev.stats) || null
+            stats: matched || (prev && prev.stats) || null
           })
         })
       })
@@ -115,6 +121,10 @@ listApproved(1, []).then(function (issues) {
       })
     }
     copyDir('site', 'dist')
+    // 资源缓存击穿：把 dist/index.html 里的 ?v=BUILD 替换为构建时间戳
+    var ver = 'v=' + Date.now()
+    var idxHtml = readFileSync('dist/index.html', 'utf8').replace(/\?v=BUILD/g, ver)
+    writeFileSync('dist/index.html', idxHtml)
     writeFileSync('dist/community.json', JSON.stringify(out))
     console.log('构建完成：' + sources.length + ' 个收录（来自 ' + issues.length + ' 个 approved issue）')
   })
