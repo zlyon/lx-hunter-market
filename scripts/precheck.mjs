@@ -99,7 +99,8 @@ gh('/repos/' + repo + '/issues/' + num, token).then(function (issue) {
   // 防滥用：本 issue 已有的预检报告数达上限则不再跑
   return gh('/repos/' + repo + '/issues/' + num + '/comments?per_page=100', token).then(function (comments) {
     var mine = (comments || []).filter(function (c) {
-      return c.user && c.user.type === 'Bot' && String(c.body || '').indexOf('自动预检报告') !== -1
+      // 评论者可能是 Bot（GITHUB_TOKEN）也可能是维护者账号（PAT），一律按报告标记计数
+      return String(c.body || '').indexOf('自动预检报告') !== -1
     })
     if (mine.length >= MAX_PRECHECKS_PER_ISSUE) {
       console.log('本 issue 已预检 ' + mine.length + ' 次，达到上限，跳过（如需重测请联系维护者删除旧报告）')
@@ -192,7 +193,13 @@ gh('/repos/' + repo + '/issues/' + num, token).then(function (issue) {
     say('⚠️ **预检发现异常**（见上表）。不必然是恶意——特征扫描是静态规则，存在误报；维护者会结合实际情况审核。')
   }
   // 机器可读统计标记：build.mjs 从评论中提取写进 community.json
-  say('\n<!--MARKET-STATS ' + JSON.stringify({ jsTotal: totJs, source: totSource, usable: totUsable, suspect: totSuspect, at: new Date().toISOString() }) + '-->')
+  // links 为逐链接统计（build 按 URL 匹配给每条收录，避免整条 issue 汇总被套到每个链接上）
+  say('\n<!--MARKET-STATS ' + JSON.stringify({
+    jsTotal: totJs, source: totSource, usable: totUsable, suspect: totSuspect, at: new Date().toISOString(),
+    links: results.map(function (r) {
+      return { url: r.url, type: r.type, jsTotal: r.jsTotal || 0, source: r.sourceCount == null ? null : r.sourceCount, usable: r.usableCount || 0, suspect: r.suspectCount || 0 }
+    })
+  }) + '-->')
   return fetch('https://api.github.com/repos/' + repo + '/issues/' + num + '/comments', {
     method: 'POST',
     headers: { 'User-Agent': 'lx-hunter-market', 'Accept': 'application/vnd.github+json', 'Authorization': 'Bearer ' + commentToken, 'Content-Type': 'application/json' },
