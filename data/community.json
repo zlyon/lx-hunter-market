@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-17T15:37:20.819Z",
-  "count": 8,
+  "updatedAt": "2026-10-17T15:43:59.144Z",
+  "count": 6,
   "sources": [
     {
       "name": "pdone/lx-music-source",
@@ -68,22 +68,6 @@
       }
     },
     {
-      "name": "skxingyu/lx_music-",
-      "url": "https://github.com/skxingyu/lx_music-",
-      "repo": "skxingyu/lx_music-",
-      "type": "repo",
-      "notes": "GitHub上的一些公开洛雪音源仓库",
-      "submitter": "zlyon",
-      "issue": 2,
-      "approvedAt": "2026-10-17T15:01:14Z",
-      "stats": {
-        "usable": 0,
-        "source": null,
-        "jsTotal": 0,
-        "at": "2026-10-17T15:36:28.342Z"
-      }
-    },
-    {
       "name": "jeffernn/music-source",
       "url": "https://github.com/jeffernn/music-source",
       "repo": "jeffernn/music-source",
@@ -112,22 +96,6 @@
         "usable": 2,
         "source": 13,
         "jsTotal": 13,
-        "at": "2026-10-17T15:36:28.342Z"
-      }
-    },
-    {
-      "name": "oozzbb/LxMusicApi",
-      "url": "https://github.com/oozzbb/LxMusicApi",
-      "repo": "oozzbb/LxMusicApi",
-      "type": "repo",
-      "notes": "GitHub上的一些公开洛雪音源仓库",
-      "submitter": "zlyon",
-      "issue": 2,
-      "approvedAt": "2026-10-17T15:01:14Z",
-      "stats": {
-        "usable": 0,
-        "source": null,
-        "jsTotal": 0,
         "at": "2026-10-17T15:36:28.342Z"
       }
     }
