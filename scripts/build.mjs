@@ -42,6 +42,18 @@ function issueStats(num) {
 }
 
 listApproved(1, []).then(function (issues) {
+  // 逐链接统计：MARKET-STATS 带 links 数组时按 URL 精确匹配，避免整条 issue 的汇总被套到每个链接上
+  function statsFor(sUrl, agg) {
+    if (!agg) return null
+    if (!Array.isArray(agg.links)) return agg // 旧格式（仅汇总）
+    for (var i = 0; i < agg.links.length; i++) {
+      if (agg.links[i].url === sUrl) {
+        var l = agg.links[i]
+        return { usable: l.usable || 0, source: l.source == null ? null : l.source, jsTotal: l.jsTotal || 0, at: agg.at }
+      }
+    }
+    return null // 新格式但没这条链接（如预检失败的链接）：不显示统计
+  }
   var sources = []
   var seen = {}
   var next = Promise.resolve()
@@ -66,7 +78,7 @@ listApproved(1, []).then(function (issues) {
             submitter: issue.user ? issue.user.login : '',
             issue: issue.number,
             approvedAt: (prev && prev.approvedAt) || issue.updated_at || new Date().toISOString(),
-            stats: stats || (prev && prev.stats) || null
+            stats: statsFor(link.url, stats) || (prev && prev.stats) || null
           })
         })
       })
