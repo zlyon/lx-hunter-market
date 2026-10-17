@@ -30,6 +30,8 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: node scripts/build.mjs
       - name: 提交数据（有变化时）
+        # 尽力而为：提交竞争等小概率失败不标记 run 失败（不发 Run failed 邮件），下轮构建会补上
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
