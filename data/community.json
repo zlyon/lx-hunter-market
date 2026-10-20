@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-20T03:00:03.822Z",
-  "count": 11,
+  "updatedAt": "2026-10-20T03:12:06.337Z",
+  "count": 15,
   "sources": [
     {
       "name": "pdone/lx-music-source",
@@ -112,7 +112,8 @@
         "usable": 0,
         "source": 0,
         "jsTotal": 1,
-        "at": "2026-10-20T02:49:39.381Z"
+        "at": "2026-10-20T02:49:39.381Z",
+        "via": "page"
       }
     },
     {
@@ -128,7 +129,8 @@
         "usable": 2,
         "source": 3,
         "jsTotal": 3,
-        "at": "2026-10-20T02:49:39.381Z"
+        "at": "2026-10-20T02:49:39.381Z",
+        "via": "tree"
       }
     },
     {
@@ -144,7 +146,8 @@
         "usable": 7,
         "source": 17,
         "jsTotal": 35,
-        "at": "2026-10-20T02:49:39.381Z"
+        "at": "2026-10-20T02:49:39.381Z",
+        "via": "page"
       }
     },
     {
@@ -160,22 +163,87 @@
         "usable": 0,
         "source": 1,
         "jsTotal": 1,
-        "at": "2026-10-20T02:49:39.381Z"
+        "at": "2026-10-20T02:49:39.381Z",
+        "via": "tree"
       }
     },
     {
-      "name": "lick563/Xinglan-aggregate-sound-sources",
-      "url": "https://github.com/lick563/Xinglan-aggregate-sound-sources",
+      "name": "星海音源、GDStudio 音乐源、星澜聚合音源 (StellarWave)、玉宁熙 · stellarwave-v4.0.0",
+      "url": "https://github.com/lick563/Xinglan-aggregate-sound-sources/releases/download/4.0.0/stellarwave-v4.0.0.js",
       "repo": "lick563/Xinglan-aggregate-sound-sources",
-      "type": "repo",
+      "type": "js",
       "notes": "",
       "submitter": "chrisdong",
       "issue": 3,
       "approvedAt": "2026-10-20T02:59:52Z",
       "stats": {
-        "usable": 5,
-        "source": 5,
-        "jsTotal": 5,
+        "usable": 1,
+        "source": 1,
+        "jsTotal": 1,
+        "at": "2026-10-20T02:49:39.381Z"
+      }
+    },
+    {
+      "name": "星海音源、GDStudio 音乐源、星澜聚合音源 (StellarWave)、玉宁熙 · Xinglan.aggregate.sound.sourcesv3.1.2",
+      "url": "https://github.com/lick563/Xinglan-aggregate-sound-sources/releases/download/3.1.2/Xinglan.aggregate.sound.sourcesv3.1.2.js",
+      "repo": "lick563/Xinglan-aggregate-sound-sources",
+      "type": "js",
+      "notes": "",
+      "submitter": "chrisdong",
+      "issue": 3,
+      "approvedAt": "2026-10-20T02:59:52Z",
+      "stats": {
+        "usable": 1,
+        "source": 1,
+        "jsTotal": 1,
+        "at": "2026-10-20T02:49:39.381Z"
+      }
+    },
+    {
+      "name": "星海音源、GDStudio 音乐源、星澜聚合音源 (StellarWave)、玉宁熙 · Xinglan.aggregate.sound.sourcesv3.1.1.1",
+      "url": "https://github.com/lick563/Xinglan-aggregate-sound-sources/releases/download/3.1.1.1/Xinglan.aggregate.sound.sourcesv3.1.1.1.js",
+      "repo": "lick563/Xinglan-aggregate-sound-sources",
+      "type": "js",
+      "notes": "",
+      "submitter": "chrisdong",
+      "issue": 3,
+      "approvedAt": "2026-10-20T02:59:52Z",
+      "stats": {
+        "usable": 1,
+        "source": 1,
+        "jsTotal": 1,
+        "at": "2026-10-20T02:49:39.381Z"
+      }
+    },
+    {
+      "name": "星海音源、GDStudio 音乐源、星澜聚合音源 (StellarWave)、玉宁熙 · Xinglan.aggregate.sound.sourcesv3.1.1",
+      "url": "https://github.com/lick563/Xinglan-aggregate-sound-sources/releases/download/3.1.1/Xinglan.aggregate.sound.sourcesv3.1.1.js",
+      "repo": "lick563/Xinglan-aggregate-sound-sources",
+      "type": "js",
+      "notes": "",
+      "submitter": "chrisdong",
+      "issue": 3,
+      "approvedAt": "2026-10-20T02:59:52Z",
+      "stats": {
+        "usable": 1,
+        "source": 1,
+        "jsTotal": 1,
+        "at": "2026-10-20T02:49:39.381Z"
+      }
+    },
+    {
+      "name": "星海音源、GDStudio 音乐源、星澜聚合音源 (StellarWave)、玉宁熙 · v2.0.0",
+      "url": "https://github.com/lick563/Xinglan-aggregate-sound-sources/releases/download/2.0.0/v2.0.0.js",
+      "repo": "lick563/Xinglan-aggregate-sound-sources",
+      "type": "js",
+      "notes": "",
+      "submitter": "chrisdong",
+      "issue": 3,
+      "approvedAt": "2026-10-20T02:59:52Z",
+      "stats": {
+        "usable": 1,
+        "source": 1,
+        "jsTotal": 1,
         "at": "2026-10-20T02:49:39.381Z"
       }
     }
