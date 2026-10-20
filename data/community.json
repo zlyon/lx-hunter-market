@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-20T02:27:41.921Z",
-  "count": 12,
+  "updatedAt": "2026-10-20T03:00:03.822Z",
+  "count": 11,
   "sources": [
     {
       "name": "pdone/lx-music-source",
@@ -112,7 +112,7 @@
         "usable": 0,
         "source": 0,
         "jsTotal": 1,
-        "at": "2026-10-18T00:34:40.402Z"
+        "at": "2026-10-20T02:49:39.381Z"
       }
     },
     {
@@ -128,7 +128,7 @@
         "usable": 2,
         "source": 3,
         "jsTotal": 3,
-        "at": "2026-10-18T00:34:40.402Z"
+        "at": "2026-10-20T02:49:39.381Z"
       }
     },
     {
@@ -144,23 +144,7 @@
         "usable": 7,
         "source": 17,
         "jsTotal": 35,
-        "at": "2026-10-18T00:34:40.402Z"
-      }
-    },
-    {
-      "name": "xinghai-music-sourcev2.3.15",
-      "url": "https://zrcdy.dpdns.org/lx/xinghai-music-sourcev2.3.15.js",
-      "repo": "",
-      "type": "js",
-      "notes": "",
-      "submitter": "chrisdong",
-      "issue": 3,
-      "approvedAt": "2026-10-20T01:43:07Z",
-      "stats": {
-        "usable": 1,
-        "source": 1,
-        "jsTotal": 1,
-        "at": "2026-10-18T00:34:40.402Z"
+        "at": "2026-10-20T02:49:39.381Z"
       }
     },
     {
@@ -176,23 +160,23 @@
         "usable": 0,
         "source": 1,
         "jsTotal": 1,
-        "at": "2026-10-18T00:34:40.402Z"
+        "at": "2026-10-20T02:49:39.381Z"
       }
     },
     {
-      "name": "lx-%E7%8E%89%E5%AE%81%E7%86%99",
-      "url": "https://gitee.com/Myn_1/Mao_Yuna/raw/MYN_update/lx-music/lx-玉宁熙.js",
-      "repo": "",
-      "type": "js",
+      "name": "lick563/Xinglan-aggregate-sound-sources",
+      "url": "https://github.com/lick563/Xinglan-aggregate-sound-sources",
+      "repo": "lick563/Xinglan-aggregate-sound-sources",
+      "type": "repo",
       "notes": "",
       "submitter": "chrisdong",
       "issue": 3,
-      "approvedAt": "2026-10-20T01:43:07Z",
+      "approvedAt": "2026-10-20T02:59:52Z",
       "stats": {
-        "usable": 0,
-        "source": 0,
-        "jsTotal": 1,
-        "at": "2026-10-18T00:34:40.402Z"
+        "usable": 5,
+        "source": 5,
+        "jsTotal": 5,
+        "at": "2026-10-20T02:49:39.381Z"
       }
     }
   ]
