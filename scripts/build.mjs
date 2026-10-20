@@ -49,7 +49,10 @@ listApproved(1, []).then(function (issues) {
     for (var i = 0; i < agg.links.length; i++) {
       if (agg.links[i].url === sUrl) {
         var l = agg.links[i]
-        return { usable: l.usable || 0, source: l.source == null ? null : l.source, jsTotal: l.jsTotal || 0, at: agg.at }
+        var out = { usable: l.usable || 0, source: l.source == null ? null : l.source, jsTotal: l.jsTotal || 0, at: agg.at }
+        if (l.via) out.via = l.via
+        if (l.assets) out.assets = l.assets
+        return out
       }
     }
     return null // 新格式但没这条链接（如预检失败的链接）：不显示统计
