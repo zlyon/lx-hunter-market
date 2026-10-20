@@ -1,4 +1,4 @@
-// 投稿预检：解析 issue 表单 → 逐链接下载脚本 → 恶意特征扫描 + 疑似音源判定 + 子进程沙箱实测
+// 投稿预检：解析 issue 表单 → 逐链接下载脚本（超时自动重试 3 次）→ 恶意特征扫描 + 疑似音源判定 + 子进程沙箱实测
 // → 结果评论到 issue（内嵌机器可读 MARKET-STATS 标记供 build.mjs 提取）。
 // 由 precheck.yml 触发（issue opened/edited），需 env：GH_TOKEN、ISSUE_NUMBER、GITHUB_REPOSITORY。
 // 安全设计：沙箱在独立子进程跑，环境变量剥空（无 GH_TOKEN）；每 issue 最多预检 3 次防滥用。
@@ -24,17 +24,40 @@ var MAX_SANDBOX_PER_LINK = 30     // 每链接最多沙箱实测的疑似音源�
 var SANDBOX_BUDGET_MS = 8 * 60 * 1000  // 每链接沙箱总预算 8 分钟
 var MAX_PRECHECKS_PER_ISSUE = 3   // 每 issue 最多预检次数（防反复编辑刷预检）
 
+var FETCH_TIMEOUT = 10000   // 单次下载超时
+var FETCH_RETRIES = 3       // 下载超时重试次数（Actions 出海访问国内源波动大，超时多为瞬时）
+
 var lines = []
 function say(s) { lines.push(s); console.log(s) }
 
+function isAbortErr(e) {
+  return e && (e.name === 'AbortError' || /abort/i.test(String(e.message || e)))
+}
+
+function fetchOnce(url) {
+  return new Promise(function (resolve, reject) {
+    var ctrl = new AbortController()
+    var t = setTimeout(function () { ctrl.abort() }, FETCH_TIMEOUT)
+    fetch(url, { headers: { 'User-Agent': 'lx-hunter-market' }, redirect: 'follow', signal: ctrl.signal }).then(function (res) {
+      clearTimeout(t)
+      if (!res.ok) { reject(new Error('HTTP ' + res.status)); return }
+      res.text().then(resolve, function (e) { clearTimeout(t); reject(e) })
+    }, function (e) { clearTimeout(t); reject(e) })
+  })
+}
+
+// 只对超时重试（HTTP 404/403 等确定性失败重试无意义）；重试耗尽后报中文原因
 function fetchText(url) {
-  var ctrl = new AbortController()
-  var t = setTimeout(function () { ctrl.abort() }, 10000)
-  return fetch(url, { headers: { 'User-Agent': 'lx-hunter-market' }, redirect: 'follow', signal: ctrl.signal }).then(function (res) {
-    clearTimeout(t)
-    if (!res.ok) throw new Error('HTTP ' + res.status)
-    return res.text()
-  }, function (e) { clearTimeout(t); throw e })
+  var lastErr = null
+  function attempt(n) {
+    return fetchOnce(url).catch(function (e) {
+      if (!isAbortErr(e)) throw e
+      lastErr = e
+      if (n >= FETCH_RETRIES) throw new Error('下载超时（已重试 ' + FETCH_RETRIES + ' 次）')
+      return new Promise(function (r) { setTimeout(r, 1000) }).then(function () { return attempt(n + 1) })
+    })
+  }
+  return attempt(0)
 }
 
 // 沙箱子进程：环境变量剥空，只留 PATH/HOME；120s 硬顶击杀
@@ -161,9 +184,9 @@ gh('/repos/' + repo + '/issues/' + num, token).then(function (issue) {
                   if (usablePlats.indexOf(r.usablePlatforms.join('/')) === -1) usablePlats.push(r.usablePlatforms.join('/'))
                 }
               })
-            }).catch(function () {
+            }).catch(function (e) {
               jsTotal++
-              flags.push('脚本下载失败（' + '网络/404' + '）')
+              flags.push('脚本下载失败（' + String(e.message || e).slice(0, 60) + '）')
             })
           })
         })
