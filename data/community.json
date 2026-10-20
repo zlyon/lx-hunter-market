@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-20T03:12:06.337Z",
-  "count": 15,
+  "updatedAt": "2026-10-20T03:42:47.231Z",
+  "count": 16,
   "sources": [
     {
       "name": "pdone/lx-music-source",
@@ -112,7 +112,7 @@
         "usable": 0,
         "source": 0,
         "jsTotal": 1,
-        "at": "2026-10-20T02:49:39.381Z",
+        "at": "2026-10-20T03:41:51.859Z",
         "via": "page"
       }
     },
@@ -129,7 +129,7 @@
         "usable": 2,
         "source": 3,
         "jsTotal": 3,
-        "at": "2026-10-20T02:49:39.381Z",
+        "at": "2026-10-20T03:41:51.859Z",
         "via": "tree"
       }
     },
@@ -146,7 +146,7 @@
         "usable": 7,
         "source": 17,
         "jsTotal": 35,
-        "at": "2026-10-20T02:49:39.381Z",
+        "at": "2026-10-20T03:41:51.859Z",
         "via": "page"
       }
     },
@@ -163,7 +163,7 @@
         "usable": 0,
         "source": 1,
         "jsTotal": 1,
-        "at": "2026-10-20T02:49:39.381Z",
+        "at": "2026-10-20T03:41:51.859Z",
         "via": "tree"
       }
     },
@@ -180,7 +180,7 @@
         "usable": 1,
         "source": 1,
         "jsTotal": 1,
-        "at": "2026-10-20T02:49:39.381Z"
+        "at": "2026-10-20T03:41:51.859Z"
       }
     },
     {
@@ -196,7 +196,7 @@
         "usable": 1,
         "source": 1,
         "jsTotal": 1,
-        "at": "2026-10-20T02:49:39.381Z"
+        "at": "2026-10-20T03:41:51.859Z"
       }
     },
     {
@@ -212,7 +212,7 @@
         "usable": 1,
         "source": 1,
         "jsTotal": 1,
-        "at": "2026-10-20T02:49:39.381Z"
+        "at": "2026-10-20T03:41:51.859Z"
       }
     },
     {
@@ -228,7 +228,7 @@
         "usable": 1,
         "source": 1,
         "jsTotal": 1,
-        "at": "2026-10-20T02:49:39.381Z"
+        "at": "2026-10-20T03:41:51.859Z"
       }
     },
     {
@@ -244,7 +244,24 @@
         "usable": 1,
         "source": 1,
         "jsTotal": 1,
-        "at": "2026-10-20T02:49:39.381Z"
+        "at": "2026-10-20T03:41:51.859Z"
+      }
+    },
+    {
+      "name": "xinghai-music-sourcev2.3.15",
+      "url": "https://zrcdy.dpdns.org/lx/xinghai-music-sourcev2.3.15.js",
+      "repo": "",
+      "type": "js",
+      "notes": "",
+      "submitter": "chrisdong",
+      "issue": 3,
+      "approvedAt": "2026-10-20T03:42:35Z",
+      "stats": {
+        "usable": 1,
+        "source": 1,
+        "jsTotal": 1,
+        "at": "2026-10-20T03:41:51.859Z",
+        "via": "js"
       }
     }
   ]
