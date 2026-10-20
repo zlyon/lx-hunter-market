@@ -9,7 +9,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { scanMalware } from './scan-malware.mjs'
 import { classifyEntry, extractMeta } from './source-rules.mjs'
-import { parseForm, classifyLink, gh } from './form.mjs'
+import { parseForm, classifyLink, releaseAssets, gh } from './form.mjs'
 import { extractJsLinks as extractJsLinksFrom } from './precheck-lib.mjs'
 
 var token = process.env.GH_TOKEN            // 读接口用（提额防限流，无需写权限）
@@ -72,25 +72,39 @@ function extractJsLinks(html, pageUrl) {
   return extractJsLinksFrom(html, pageUrl, MAX_FILES_PER_REPO)
 }
 
-// 仓库：取 .js 文件列表；直链：直接取内容；发布页：抓 HTML 提取 js 链接
+// 直链：直接取内容；发布页：抓 HTML 提取 js 链接；
+// 仓库：取 git tree 的 .js，没有则兜底扫 Releases 资产；Release 页/资产：走 Releases API 拿 .js 资产
+// 返回 { scripts, via }：via 标记脚本来源（tree / releases / page / js），供报告与收录端区分
 function collectScripts(link) {
   if (link.type === 'js') {
-    return fetchText(link.url).then(function (code) { return [{ url: link.url, path: link.url, code: code }] })
+    return fetchText(link.url).then(function (code) { return { via: 'js', scripts: [{ url: link.url, path: link.url, code: code }] } })
   }
   if (link.type === 'page') {
     return fetchText(link.url).then(function (html) {
       var urls = extractJsLinks(html, link.url)
       if (!urls.length) throw new Error('发布页里没有提取到 .js 链接')
-      return urls.map(function (u) { return { url: u, path: u, code: null } })
+      return { via: 'page', scripts: urls.map(function (u) { return { url: u, path: u, code: null } }) }
+    })
+  }
+  if (link.type === 'release') {
+    return releaseAssets(link.repo, link.tag, token, MAX_FILES_PER_REPO).then(function (assets) {
+      if (!assets.length) throw new Error(link.tag ? ('Release ' + link.tag + ' 里没有 .js 资产') : '该仓库的 Releases 里没有 .js 资产')
+      return { via: 'releases', scripts: assets.map(function (a) { return { url: a.url, path: a.name, code: null } }) }
     })
   }
   return gh('/repos/' + link.repo + '/git/trees/HEAD?recursive=1', token).then(function (tree) {
     var items = (tree.tree || []).filter(function (it) {
       return it.type === 'blob' && /\.js$/i.test(it.path || '')
     }).slice(0, MAX_FILES_PER_REPO)
-    if (!items.length) throw new Error('仓库里没有找到 .js 文件')
-    var rawBase = 'https://raw.githubusercontent.com/' + link.repo + '/HEAD/'
-    return items.map(function (it) { return { url: rawBase + it.path.split('/').map(encodeURIComponent).join('/'), path: it.path, code: null } })
+    if (items.length) {
+      var rawBase = 'https://raw.githubusercontent.com/' + link.repo + '/HEAD/'
+      return { via: 'tree', scripts: items.map(function (it) { return { url: rawBase + it.path.split('/').map(encodeURIComponent).join('/'), path: it.path, code: null } }) }
+    }
+    // 仓库里没有 .js：兜底扫 Releases 资产（脚本只挂在 Release 的仓库很常见）
+    return releaseAssets(link.repo, '', token, MAX_FILES_PER_REPO).then(function (assets) {
+      if (!assets.length) throw new Error('仓库和其 Releases 里都没有找到 .js 脚本')
+      return { via: 'releases', scripts: assets.map(function (a) { return { url: a.url, path: a.name, code: null } }) }
+    })
   })
 }
 
@@ -113,15 +127,20 @@ gh('/repos/' + repo + '/issues/' + num, token).then(function (issue) {
     say('解析到 **' + body.links.length + '** 个链接，确认勾选 ' + body.confirmChecked + '/' + body.confirmTotal + '。\n')
     var jobs = body.links.map(function (u) {
       var link = classifyLink(u)
-      if (!link) return Promise.resolve({ url: u, type: 'invalid', ok: false, flags: [], note: '不支持的链接类型（仅支持 .js 直链 / GitHub 仓库 / 音源发布页）' })
-      return collectScripts(link).then(function (scripts) {
+      if (!link) return Promise.resolve({ url: u, type: 'invalid', ok: false, flags: [], jsTotal: 0, note: '不支持的链接类型（仅支持 .js 直链 / GitHub 仓库 / GitHub Releases / 音源发布页）' })
+      return collectScripts(link).then(function (res) {
+        var scripts = res.scripts
+        var via = res.via
         var flags = []
         var jsTotal = 0, sourceCount = 0, sandboxed = 0, usableCount = 0, suspectCount = 0
         var usablePlats = []
         var sandboxBudgetEnd = Date.now() + SANDBOX_BUDGET_MS
         var sandboxSkipped = false
+        var perScript = [] // 逐脚本结果（via=releases 时写入 MARKET-STATS，收录端展开为逐资产条目）
         var next = Promise.resolve()
         scripts.forEach(function (s) {
+          var rec = { url: s.url, js: 1, source: 0, usable: 0, suspect: 0 }
+          if (via === 'releases') perScript.push(rec)
           next = next.then(function () {
             var got = s.code != null ? Promise.resolve(s.code) : fetchText(s.url)
             return got.then(function (code) {
@@ -130,13 +149,15 @@ gh('/repos/' + repo + '/issues/' + num, token).then(function (issue) {
               f.forEach(function (x) { if (flags.indexOf(x) === -1) flags.push(x) })
               if (!classifyEntry(s.path, code)) return // 非音源 JS：插件也不抓，不计入统计
               sourceCount++
-              if (f.length) suspectCount++
+              rec.source = 1
+              if (f.length) { suspectCount++; rec.suspect = 1 }
               if (sandboxSkipped || Date.now() > sandboxBudgetEnd) { sandboxSkipped = true; return }
               if (sandboxed >= MAX_SANDBOX_PER_LINK) { sandboxSkipped = true; return }
               sandboxed++
               return sandboxCheck(code).then(function (r) {
                 if (r && r.usablePlatforms && r.usablePlatforms.length) {
                   usableCount++
+                  rec.usable = 1
                   if (usablePlats.indexOf(r.usablePlatforms.join('/')) === -1) usablePlats.push(r.usablePlatforms.join('/'))
                 }
               })
@@ -147,15 +168,16 @@ gh('/repos/' + repo + '/issues/' + num, token).then(function (issue) {
           })
         })
         return next.then(function () {
+          var viaNote = via === 'releases' ? '（脚本来自 Releases 资产' + (link.type === 'repo' ? '，仓库内无 .js' : '') + '）' : ''
           return {
             url: u, type: link.type, repo: link.repo || '', ok: flags.length === 0, flags: flags,
             jsTotal: jsTotal, sourceCount: sourceCount, sandboxed: sandboxed, usableCount: usableCount,
-            suspectCount: suspectCount, usablePlats: usablePlats,
-            note: '扫描 ' + jsTotal + ' 个脚本' + (sandboxSkipped ? ' · 沙箱预算/数量用尽，部分音源未实测' : '')
+            suspectCount: suspectCount, usablePlats: usablePlats, via: via, assets: via === 'releases' ? perScript : null,
+            note: '扫描 ' + jsTotal + ' 个脚本' + viaNote + (sandboxSkipped ? ' · 沙箱预算/数量用尽，部分音源未实测' : '')
           }
         })
       }).catch(function (e) {
-        return { url: u, type: (link && link.type) || '?', ok: false, flags: [], note: String(e.message || e).slice(0, 120) }
+        return { url: u, type: (link && link.type) || '?', ok: false, flags: [], jsTotal: 0, sourceCount: null, usableCount: 0, suspectCount: 0, note: String(e.message || e).slice(0, 120) }
       })
     })
     return Promise.all(jobs)
@@ -182,7 +204,7 @@ gh('/repos/' + repo + '/issues/' + num, token).then(function (issue) {
     else if (r.jsTotal != null && r.jsTotal === 0) { verdict = '❌'; allOk = false }
     else verdict = '✅'
     var srcCol = r.sourceCount != null ? r.sourceCount + ' / ' + r.usableCount + (r.usablePlats && r.usablePlats.length ? '（' + r.usablePlats.join('; ') + '）' : '') : '—'
-    say('| ' + r.url + ' | ' + ({ repo: '仓库', js: '直链', page: '发布页' }[r.type] || r.type) + ' | ' + srcCol + ' | ' + verdict + ' | ' + (r.note || '') + (r.flags.length ? '；特征：' + r.flags.join('、') : '') + ' |')
+    say('| ' + r.url + ' | ' + ({ repo: '仓库', js: '直链', page: '发布页', release: 'Release' }[r.type] || r.type) + ' | ' + srcCol + ' | ' + verdict + ' | ' + (r.note || '') + (r.flags.length ? '；特征：' + r.flags.join('、') : '') + ' |')
   })
   say('')
   say('> 「可用」为**审核时快照**：Actions 网络环境与客户端不同，部分平台可能误判为不可用；音源后续更新内容会由插件端每次爬取时重新扫描与沙箱实测。')
@@ -193,11 +215,15 @@ gh('/repos/' + repo + '/issues/' + num, token).then(function (issue) {
     say('⚠️ **预检发现异常**（见上表）。不必然是恶意——特征扫描是静态规则，存在误报；维护者会结合实际情况审核。')
   }
   // 机器可读统计标记：build.mjs 从评论中提取写进 community.json
-  // links 为逐链接统计（build 按 URL 匹配给每条收录，避免整条 issue 汇总被套到每个链接上）
+  // links 为逐链接统计（build 按 URL 匹配给每条收录）；via=releases 的链接带 assets 逐资产结果，
+  // 收录端把 Release 链接展开成逐资产 .js 直链条目（插件端按直链订阅，不认识 release 类型）
   say('\n<!--MARKET-STATS ' + JSON.stringify({
     jsTotal: totJs, source: totSource, usable: totUsable, suspect: totSuspect, at: new Date().toISOString(),
     links: results.map(function (r) {
-      return { url: r.url, type: r.type, jsTotal: r.jsTotal || 0, source: r.sourceCount == null ? null : r.sourceCount, usable: r.usableCount || 0, suspect: r.suspectCount || 0 }
+      var l = { url: r.url, type: r.type, jsTotal: r.jsTotal || 0, source: r.sourceCount == null ? null : r.sourceCount, usable: r.usableCount || 0, suspect: r.suspectCount || 0 }
+      if (r.via) l.via = r.via
+      if (r.assets && r.assets.length) l.assets = r.assets
+      return l
     })
   }) + '-->')
   return fetch('https://api.github.com/repos/' + repo + '/issues/' + num + '/comments', {

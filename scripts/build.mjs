@@ -1,7 +1,7 @@
 // 构建社区精选：收集带 approved 标签的开放 issue → data/community.json + dist/（Pages 站点）。
 // 由 build.yml 触发（定时/手动/push），需 env：GH_TOKEN、GITHUB_REPOSITORY。
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync, existsSync } from 'node:fs'
-import { parseForm, classifyLink, gh } from './form.mjs'
+import { parseForm, classifyLink, releaseAssets, gh } from './form.mjs'
 
 var token = process.env.GH_TOKEN
 var repo = process.env.GITHUB_REPOSITORY
@@ -56,37 +56,90 @@ listApproved(1, []).then(function (issues) {
   }
   var sources = []
   var seen = {}
+  // 单条收录（原逻辑）
+  function pushOne(issue, form, link, matched) {
+    var key = link.url
+    if (seen[key]) return
+    seen[key] = true
+    var prev = prevByKey[key]
+    sources.push({
+      name: form.name || issue.title.replace(/^\[音源收录\]\s*/, '') || key,
+      url: link.url,
+      repo: link.repo || '',
+      type: link.type,
+      notes: (form.notes || '').slice(0, 200),
+      submitter: issue.user ? issue.user.login : '',
+      issue: issue.number,
+      approvedAt: (prev && prev.approvedAt) || issue.updated_at || new Date().toISOString(),
+      stats: matched || (prev && prev.stats) || null
+    })
+  }
+  // 单个 Release 资产 → 一条 .js 直链条目（插件端只认 repo/js/page，存 release 页 URL 插件取不到脚本）
+  function assetName(a) {
+    return String(a.name || decodeURIComponent(String(a.url).split('/').pop().split('?')[0])).replace(/\.js$/i, '')
+  }
+  function pushAsset(issue, form, link, a, matched, multi) {
+    if (seen[a.url]) return
+    seen[a.url] = true
+    var base = assetName(a)
+    var mStats = null
+    if (matched && Array.isArray(matched.assets)) {
+      for (var i = 0; i < matched.assets.length; i++) {
+        if (matched.assets[i].url === a.url) {
+          mStats = { usable: matched.assets[i].usable || 0, source: matched.assets[i].source, jsTotal: matched.assets[i].js || 1, at: matched.at }
+          break
+        }
+      }
+    }
+    var prev = prevByKey[a.url]
+    sources.push({
+      name: ((form.name || issue.title.replace(/^\[音源收录\]\s*/, '') || base) + (multi ? ' · ' + base : '')),
+      url: a.url,
+      repo: link.repo || '',
+      type: 'js',
+      notes: (form.notes || '').slice(0, 200),
+      submitter: issue.user ? issue.user.login : '',
+      issue: issue.number,
+      approvedAt: (prev && prev.approvedAt) || issue.updated_at || new Date().toISOString(),
+      stats: mStats || (prev && prev.stats) || null
+    })
+  }
+  // 逐链接处理：Release 链接 / 脚本来自 Release 资产的仓库链接 → 展开为逐资产条目；其余原样单条
+  function handleLink(issue, form, u, stats) {
+    var link = classifyLink(u)
+    if (!link) return Promise.resolve()
+    // 预检没测出音源脚本的链接（仓库/Release 里没有 .js / 扫描失败）直接抛弃，不入库不展示
+    var matched = statsFor(link.url, stats)
+    if (matched && (matched.source == null || (matched.source === 0 && matched.jsTotal === 0))) {
+      console.log('跳过（无音源脚本）: ' + link.url)
+      return Promise.resolve()
+    }
+    var expand = link.type === 'release' || (link.type === 'repo' && matched && matched.via === 'releases')
+    if (expand) {
+      // 资产清单优先取预检统计里带的逐资产结果；预检缺失（旧 issue）时回退现查 Releases API
+      var fromStats = ((matched && matched.assets) || []).filter(function (a) { return a && a.url && a.source === 1 })
+      var listP = fromStats.length
+        ? Promise.resolve(fromStats.map(function (a) { return { url: a.url, name: assetName(a) } }))
+        : releaseAssets(link.repo, link.tag || '', token, 100)
+      return listP.then(function (assets) {
+        if (!assets.length) { console.log('跳过（Release 里没有 .js 资产）: ' + link.url); return }
+        assets.forEach(function (a) { pushAsset(issue, form, link, a, matched, assets.length > 1) })
+      }).catch(function (e) { console.log('Release 解析失败 ' + link.url + ': ' + (e.message || e)) })
+    }
+    pushOne(issue, form, link, matched)
+    return Promise.resolve()
+  }
   var next = Promise.resolve()
   issues.forEach(function (issue) {
     next = next.then(function () {
       return issueStats(issue.number).then(function (stats) {
         var form = parseForm(issue.body)
         if (!form.links.length) return
+        var chain = Promise.resolve()
         form.links.forEach(function (u) {
-          var link = classifyLink(u)
-          if (!link) return
-          var key = link.url
-          if (seen[key]) return
-          // 预检没测出音源脚本的链接（仓库里没有 .js / 扫描失败）直接抛弃，不入库不展示
-          var matched = statsFor(link.url, stats)
-          if (matched && (matched.source == null || (matched.source === 0 && matched.jsTotal === 0))) {
-            console.log('跳过（无音源脚本）: ' + key)
-            return
-          }
-          seen[key] = true
-          var prev = prevByKey[key]
-          sources.push({
-            name: form.name || issue.title.replace(/^\[音源收录\]\s*/, '') || key,
-            url: link.url,
-            repo: link.repo || '',
-            type: link.type,
-            notes: (form.notes || '').slice(0, 200),
-            submitter: issue.user ? issue.user.login : '',
-            issue: issue.number,
-            approvedAt: (prev && prev.approvedAt) || issue.updated_at || new Date().toISOString(),
-            stats: matched || (prev && prev.stats) || null
-          })
+          chain = chain.then(function () { return handleLink(issue, form, u, stats) })
         })
+        return chain
       })
     })
   })

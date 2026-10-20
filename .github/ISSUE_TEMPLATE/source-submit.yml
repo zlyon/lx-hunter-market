@@ -9,7 +9,7 @@ body:
       label: 链接地址
       description: >
         音源名称直接写在页面顶部的标题里（保留 [音源收录] 前缀，后面接名称即可），避免重复填写。
-        每行一个链接，支持：.js 直链、GitHub 仓库地址、音源发布页（挂着多个 .js 的列表页）；
+        每行一个链接，支持：.js 直链、GitHub 仓库地址、GitHub Releases（Release 页 / 标签页 / 资产直链均可，自动扫描 Release 里的 .js 资产）、音源发布页（挂着多个 .js 的列表页）；
         也可以把 .js 文件直接拖入下方输入框作为附件上传。请不要附加其他文字到链接行内
       placeholder: |
         https://example.com/my-source.js

@@ -42,14 +42,41 @@ export function parseForm(body) {
   return out
 }
 
-// 链接分类归一：GitHub 仓库 / .js 直链 / 音源发布页（挂着一堆 .js 的列表页）；不支持返回 null
+// 链接分类归一：GitHub 仓库 / .js 直链 / 音源发布页（挂着一堆 .js 的列表页）/ GitHub Releases；不支持返回 null
 export function classifyLink(url) {
   var u = String(url || '').trim()
   var m = u.match(/^https?:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)(?:\/(?:tree|blob)\/[^/]+)?\/?$/i)
   if (m) return { type: 'repo', repo: m[1] + '/' + m[2].replace(/\.git$/i, ''), url: u }
+  // Release 资产直链：.js 按直链处理（重定向到 objects.githubusercontent.com，fetch 跟随即可）；其它文件按 Release 处理
+  var d = u.match(/^https?:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/releases\/download\/([^/?#]+)\/([^/?#]+(?:\/[^/?#]+)*)/i)
+  if (d) {
+    if (/\.js(\?|#|$)/i.test(d[4])) return { type: 'js', url: u }
+    return { type: 'release', repo: d[1] + '/' + d[2].replace(/\.git$/i, ''), tag: decodeURIComponent(d[3]), url: u }
+  }
+  // Release 页：/releases、/releases/latest、/releases/tag/x（tag 留空 = 扫仓库全部 Release 的 .js 资产）
+  var r = u.match(/^https?:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)\/releases(?:\/latest|\/tag\/([^/?#]+))?\/?$/i)
+  if (r) return { type: 'release', repo: r[1] + '/' + r[2].replace(/\.git$/i, ''), tag: r[3] ? decodeURIComponent(r[3]) : '', url: u }
   if (/^https?:\/\/.+/i.test(u) && /\.js(\?|#|$)/i.test(u)) return { type: 'js', url: u }
   if (/^https?:\/\//i.test(u)) return { type: 'page', url: u }
   return null
+}
+
+// 取仓库 Releases 里的 .js 资产（预检与构建共用；tag 为空取全部 Release，最新在前）
+export function releaseAssets(repo, tag, token, cap) {
+  return gh('/repos/' + repo + '/releases?per_page=30', token).then(function (list) {
+    if (!Array.isArray(list)) return []
+    if (tag) list = list.filter(function (rel) { return rel.tag_name === tag })
+    var out = []
+    for (var i = 0; i < list.length && out.length < (cap || 100); i++) {
+      var assets = list[i].assets || []
+      for (var j = 0; j < assets.length && out.length < (cap || 100); j++) {
+        if (/\.js$/i.test(assets[j].name || '')) {
+          out.push({ url: assets[j].browser_download_url, name: assets[j].name, tag: list[i].tag_name || '' })
+        }
+      }
+    }
+    return out
+  })
 }
 
 // GitHub API 请求（零依赖，Node 22 全局 fetch）

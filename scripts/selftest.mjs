@@ -59,7 +59,13 @@ assert.equal(classifyLink('https://github.com/a/b/tree/main').repo, 'a/b', 'tree
 assert.equal(classifyLink('https://x.com/s.js?type=1').type, 'js', '带参数直链')
 assert.equal(classifyLink('https://x.com/vers.php').type, 'page', '发布页类型')
 assert.equal(classifyLink('ftp://x.com/s.js'), null, '不支持的协议')
-console.log('链接分类 ok')
+// Releases 链接归一
+assert.deepEqual(classifyLink('https://github.com/a/b/releases'), { type: 'release', repo: 'a/b', tag: '', url: 'https://github.com/a/b/releases' }, 'releases 列表页')
+assert.deepEqual(classifyLink('https://github.com/a/b/releases/latest'), { type: 'release', repo: 'a/b', tag: '', url: 'https://github.com/a/b/releases/latest' }, 'latest')
+assert.deepEqual(classifyLink('https://github.com/a/b/releases/tag/v1.2.0/'), { type: 'release', repo: 'a/b', tag: 'v1.2.0', url: 'https://github.com/a/b/releases/tag/v1.2.0/' }, 'tag 页')
+assert.equal(classifyLink('https://github.com/a/b/releases/download/v1.2.0/lx-source.js').type, 'js', '资产 .js 直链')
+assert.deepEqual(classifyLink('https://github.com/a/b/releases/download/v1.2.0/pack.zip'), { type: 'release', repo: 'a/b', tag: 'v1.2.0', url: 'https://github.com/a/b/releases/download/v1.2.0/pack.zip' }, '资产非 .js 按 Release 处理')
+console.log('链接分类 ok（含 Releases 归一）')
 
 // ---- 发布页 js 链接提取 ----
 var pageHtml = [
